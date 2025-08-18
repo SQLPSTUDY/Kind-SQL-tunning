@@ -24,7 +24,7 @@
 | [1주차](https://github.com/SQLPSTUDY/Kind-SQL-tunning/tree/main/week01) | 2025/08/01 | 1~4장 | 기초 개념 ~ 조인 최적화 |
 | [2주차](https://github.com/SQLPSTUDY/Kind-SQL-tunning/tree/main/week02) | 2025/08/08 | 5~7장 | 소트 튜닝 ~ 옵티마이저 |
 | [3주차](https://github.com/SQLPSTUDY/Kind-SQL-tunning/tree/main/week03) | 2025/08/15 | 1장 | SQL_처리_과정과_IO |
-| 4주차 | 2025/08/22 |  |  |
+| [4주차](https://github.com/SQLPSTUDY/Kind-SQL-tunning/tree/main/week04) | 2025/08/22 | 2장 | 인덱스 구조 및 탐색 |
 | 5주차 | 2025/08/29 |  |  |
 | 6주차 | 2025/09/05 |  |  |
 | 7주차 | 2025/09/12 |  |  |
