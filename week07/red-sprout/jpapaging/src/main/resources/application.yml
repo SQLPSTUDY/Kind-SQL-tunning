@@ -1,0 +1,37 @@
+spring:
+  config:
+    import: classpath:secret.yml
+
+  datasource:
+    url: ${db.url}
+    username: ${db.username}
+    password: ${db.password}
+    driver-class-name: ${db.driver-class-name}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        dialect: ${db.dialect}
+        jdbc:
+          batch_size: 100
+        order_inserts: true
+        order_updates: true
+    open-in-view: false
+    show-sql: true
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.jdbc.core: DEBUG
+    org.example.jpapaging: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
