@@ -18,20 +18,15 @@ public class JdbcPagingService {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<EmployeeDTO> rowMapper = new RowMapper<EmployeeDTO>() {
-        @Override
-        public EmployeeDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new EmployeeDTO(
-                    rs.getString("FIRST_NAME"),
-                    rs.getString("LAST_NAME"),
-                    rs.getString("DEPARTMENT_NAME"),
-                    rs.getString("STREET_ADDRESS"),
-                    rs.getString("CITY"),
-                    rs.getString("COUNTRY_NAME"),
-                    rs.getString("REGION_NAME")
-            );
-        }
-    };
+    private final RowMapper<EmployeeDTO> rowMapper = (rs, rowNum) -> new EmployeeDTO(
+            rs.getString("FIRST_NAME"),
+            rs.getString("LAST_NAME"),
+            rs.getString("DEPARTMENT_NAME"),
+            rs.getString("STREET_ADDRESS"),
+            rs.getString("CITY"),
+            rs.getString("COUNTRY_NAME"),
+            rs.getString("REGION_NAME")
+    );
 
     /**
      * Method 1: ROWNUM을 사용한 Oracle 전통 방식
@@ -49,6 +44,7 @@ public class JdbcPagingService {
                       AND L.LOCATION_ID = D.LOCATION_ID
                       AND C.COUNTRY_ID = L.COUNTRY_ID
                       AND R.REGION_ID = C.REGION_ID
+                    ORDER BY E.EMPLOYEE_ID ASC
                 ) A
                 WHERE ROWNUM <= ?
             )
@@ -70,6 +66,7 @@ public class JdbcPagingService {
               AND L.LOCATION_ID = D.LOCATION_ID
               AND C.COUNTRY_ID = L.COUNTRY_ID
               AND R.REGION_ID = C.REGION_ID
+            ORDER BY E.EMPLOYEE_ID ASC
             OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
             """;
 
@@ -85,7 +82,7 @@ public class JdbcPagingService {
             FROM (
                 SELECT E.FIRST_NAME, E.LAST_NAME, D.DEPARTMENT_NAME,
                        L.STREET_ADDRESS, L.CITY, C.COUNTRY_NAME, R.REGION_NAME,
-                       ROW_NUMBER() OVER (ORDER BY E.EMPLOYEE_ID) AS RN
+                       ROW_NUMBER() OVER (ORDER BY E.EMPLOYEE_ID ASC) AS RN
                 FROM REGIONS R, COUNTRIES C, LOCATIONS L, DEPARTMENTS D, EMPLOYEES E
                 WHERE D.DEPARTMENT_ID = E.DEPARTMENT_ID
                   AND L.LOCATION_ID = D.LOCATION_ID
@@ -110,6 +107,7 @@ public class JdbcPagingService {
             INNER JOIN LOCATIONS L ON L.LOCATION_ID = D.LOCATION_ID
             INNER JOIN COUNTRIES C ON C.COUNTRY_ID = L.COUNTRY_ID
             INNER JOIN REGIONS R ON R.REGION_ID = C.REGION_ID
+            ORDER BY E.EMPLOYEE_ID ASC
             OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
             """;
 

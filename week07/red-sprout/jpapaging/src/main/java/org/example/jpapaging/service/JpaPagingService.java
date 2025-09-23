@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.jpapaging.dto.EmployeeDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -38,6 +37,7 @@ public class JpaPagingService {
             JOIN d.location l
             JOIN l.country c
             JOIN c.region r
+            ORDER BY e.employeeId ASC
             """;
 
         TypedQuery<EmployeeDTO> query = entityManager.createQuery(jpql, EmployeeDTO.class);
@@ -52,13 +52,14 @@ public class JpaPagingService {
      */
     public List<EmployeeDTO> findWithNativeQuery(int offset, int limit) {
         String sql = """
-            SELECT E.FIRST_NAME as firstName, E.LAST_NAME as lastName, D.DEPARTMENT_NAME as departmentName,
-                   L.STREET_ADDRESS as streetAddress, L.CITY as city, C.COUNTRY_NAME as countryName, R.REGION_NAME as regionName
+            SELECT E.FIRST_NAME, E.LAST_NAME, D.DEPARTMENT_NAME,
+                   L.STREET_ADDRESS, L.CITY, C.COUNTRY_NAME, R.REGION_NAME
             FROM EMPLOYEES E
             INNER JOIN DEPARTMENTS D ON D.DEPARTMENT_ID = E.DEPARTMENT_ID
             INNER JOIN LOCATIONS L ON L.LOCATION_ID = D.LOCATION_ID
             INNER JOIN COUNTRIES C ON C.COUNTRY_ID = L.COUNTRY_ID
             INNER JOIN REGIONS R ON R.REGION_ID = C.REGION_ID
+            ORDER BY E.EMPLOYEE_ID ASC
             OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
             """;
 
@@ -70,13 +71,13 @@ public class JpaPagingService {
 
         return results.stream()
                 .map(row -> new EmployeeDTO(
-                        (String) row[0], // firstName
-                        (String) row[1], // lastName
-                        (String) row[2], // departmentName
-                        (String) row[3], // streetAddress
-                        (String) row[4], // city
-                        (String) row[5], // countryName
-                        (String) row[6]  // regionName
+                        (String) row[0],
+                        (String) row[1],
+                        (String) row[2],
+                        (String) row[3],
+                        (String) row[4],
+                        (String) row[5],
+                        (String) row[6]
                 ))
                 .toList();
     }
@@ -103,6 +104,8 @@ public class JpaPagingService {
                 region.get("regionName")
         ));
 
+        query.orderBy(cb.asc(employee.get("employeeId")));
+
         TypedQuery<EmployeeDTO> typedQuery = entityManager.createQuery(query);
         typedQuery.setFirstResult(offset);
         typedQuery.setMaxResults(limit);
@@ -111,7 +114,7 @@ public class JpaPagingService {
     }
 
     /**
-     * Method 4: JPQL with LEFT JOIN (Outer Join)
+     * Method 4: JPQL with LEFT JOIN
      */
     public List<EmployeeDTO> findWithLeftJoin(int offset, int limit) {
         String jpql = """
@@ -124,6 +127,7 @@ public class JpaPagingService {
             LEFT JOIN d.location l
             LEFT JOIN l.country c
             LEFT JOIN c.region r
+            ORDER BY e.employeeId ASC
             """;
 
         TypedQuery<EmployeeDTO> query = entityManager.createQuery(jpql, EmployeeDTO.class);
@@ -147,6 +151,7 @@ public class JpaPagingService {
             JOIN d.location l
             JOIN l.country c
             JOIN c.region r
+            ORDER BY e.employeeId ASC
             """;
 
         TypedQuery<EmployeeDTO> query = entityManager.createQuery(jpql, EmployeeDTO.class);
@@ -171,7 +176,7 @@ public class JpaPagingService {
     }
 
     /**
-     * Method 6: Slice 사용 - 다음 페이지 존재 여부만 확인 (count 쿼리 없음)
+     * Method 6: Slice 사용 - 다음 페이지 존재 여부만 확인
      */
     public Slice<EmployeeDTO> findWithSlice(Pageable pageable) {
         String jpql = """
@@ -184,11 +189,12 @@ public class JpaPagingService {
             JOIN d.location l
             JOIN l.country c
             JOIN c.region r
+            ORDER BY e.employeeId ASC
             """;
 
         TypedQuery<EmployeeDTO> query = entityManager.createQuery(jpql, EmployeeDTO.class);
         query.setFirstResult((int) pageable.getOffset());
-        query.setMaxResults(pageable.getPageSize() + 1); // 한 개 더 가져와서 다음 페이지 존재 여부 확인
+        query.setMaxResults(pageable.getPageSize() + 1);
 
         List<EmployeeDTO> content = query.getResultList();
 
@@ -214,7 +220,7 @@ public class JpaPagingService {
             JOIN d.location l
             JOIN l.country c
             JOIN c.region r
-            ORDER BY e.employeeId
+            ORDER BY e.employeeId ASC
             """;
 
         TypedQuery<EmployeeDTO> query = entityManager.createQuery(jpql, EmployeeDTO.class);
@@ -238,7 +244,7 @@ public class JpaPagingService {
     }
 
     /**
-     * Method 8: Cursor 기반 페이징 (Keyset Pagination)
+     * Method 8: Cursor 기반 페이징
      */
     public List<EmployeeDTO> findWithCursorPagination(Long lastEmployeeId, int limit) {
         String jpql = """
@@ -252,7 +258,7 @@ public class JpaPagingService {
             JOIN l.country c
             JOIN c.region r
             WHERE e.employeeId > :lastId
-            ORDER BY e.employeeId
+            ORDER BY e.employeeId ASC
             """;
 
         TypedQuery<EmployeeDTO> query = entityManager.createQuery(jpql, EmployeeDTO.class);
@@ -274,6 +280,7 @@ public class JpaPagingService {
             INNER JOIN LOCATIONS L ON L.LOCATION_ID = D.LOCATION_ID
             INNER JOIN COUNTRIES C ON C.COUNTRY_ID = L.COUNTRY_ID
             INNER JOIN REGIONS R ON R.REGION_ID = C.REGION_ID
+            ORDER BY E.EMPLOYEE_ID ASC
             OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
             """;
 
