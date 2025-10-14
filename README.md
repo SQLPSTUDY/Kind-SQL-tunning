@@ -28,7 +28,7 @@
 | [5주차](https://github.com/SQLPSTUDY/Kind-SQL-tunning/tree/main/week05) | 2025/09/01 | 3장 | 인덱스 튜닝 |
 | [6주차](https://github.com/SQLPSTUDY/Kind-SQL-tunning/tree/main/week06) | 2025/09/13 | 4장 | 조인 튜닝 |
 | [7주차](https://github.com/SQLPSTUDY/Kind-SQL-tunning/tree/main/week07) | 2025/09/22 | 5장 | 소트 튜닝 |
-| 8주차 |  |  |  |
+| [8주차](https://github.com/SQLPSTUDY/Kind-SQL-tunning/tree/main/week08) | 2025/10/14 | 6,7장 | DML & Optimizer |
 
 ## 📋 진행 방식
 
